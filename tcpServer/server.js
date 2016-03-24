@@ -13,9 +13,8 @@ var server = api.net.createServer(function(socket) {
   socket.on('data', function(data) {
     console.log('Data received (by server): ' + data);
     //performing check, if recieved data is just what you need
-    if (data.indexOf('[') > -1){
-      //parse and concat
-      arr = JSON.parse(data);
+    arr = JSON.parse(data);
+    if (Array.isArray(arr)){
       result = result.concat(arr);
     }
     //printing result of each iteration
