@@ -11,8 +11,12 @@ socket.connect({
 }, function() {
   socket.write('Hello from client');
   socket.on('data', function(data) {
-    user = JSON.parse(data);
+    arr = JSON.parse(data);
     console.log('Data received (by client): ' + data);
-    console.log('Age of ' + user.name + ' is ' + user.age);
+    for (var i = 0; i < arr.length; i++){
+      arr[i] *= 2;
+    }
+    console.log("The data sent to server: " + arr);
+    socket.write(JSON.stringify(arr));
   });
 });
