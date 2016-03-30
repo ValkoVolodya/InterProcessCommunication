@@ -6,6 +6,8 @@ api.net = require('net');
 var array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 var result = [];
 
+var cashe = [];
+
 //pool of clients
 var clients = [];
 
@@ -23,7 +25,7 @@ var server = api.net.createServer(function(socket) {
       //count number for dividing
       var H = array.length / clients.length;
       //divide and send to client
-      clients[i].write(JSON.stringify(array.slice(i * H, (i + 1) * H)));
+      clients[i].write(JSON.stringify({id : i, array : array.slice(i * H, (i + 1) * H)}));
     }
   }
 
@@ -31,9 +33,19 @@ var server = api.net.createServer(function(socket) {
   socket.on('data', function(data) {
     console.log('Data received (by server): ' + data);
     //performing check, if recieved data is just what you need
-    arr = JSON.parse(data);
-    if (Array.isArray(arr)){
-      result = result.concat(arr);
+    obj = JSON.parse(data);
+    if (Array.isArray(obj.array)){
+      cashe.push(obj);
+    }
+    //merge like a boss
+    if (cashe.length == clients.length){
+      for (var i = 0; i < clients.length; i++){
+        for (var j = 0; j < clients.length; j++){
+          if (cashe[j].id == i){
+            result = result.concat(cashe[j].array);
+          }
+        }
+      }
     }
     //printing result only if we have it
     if (result.length == array.length){
