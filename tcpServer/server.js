@@ -20,6 +20,11 @@ var server = api.net.createServer(function(socket) {
     //printing result of each iteration
     console.log("Result : " + result);
   });
+  //deleting socket when it leaves
+  socket.on('end', function () {
+    clients.slice(clients.indexOf(socket), 1);
+    console.log("deleting...");
+  });
 }).listen(2000);
 
 server.on('connection', function (socket) {
