@@ -11,7 +11,7 @@ var cashe = [];
 //pool of clients
 var clients = [];
 
-var numberOfClients = 3;
+var numberOfClients = 2;
 
 var server = api.net.createServer(function(socket) {
   //print who`s connected
@@ -24,12 +24,12 @@ var server = api.net.createServer(function(socket) {
   console.log("Client connect, count: ", clients.length);
 
   //fixed number of wanted clients
-  if (clients.length == numberOfClients){
-    for (var i = 0; i < clients.length; i++){
+  for (var i = 0; i < clients.length; i++){
+    if (clients[i].status == 0){
       //count number for dividing
       var H = array.length / clients.length;
       //divide and send to client
-      clients[i].soc.write(JSON.stringify({id : i, array : array.slice(i * H, (i + 1) * H)}));
+      clients[i].soc.write(JSON.stringify({cId: i, id : i, array : array.slice(i * H, (i + 1) * H)}));
       clients[i].status = 1;
     }
   }
@@ -41,6 +41,7 @@ var server = api.net.createServer(function(socket) {
     obj = JSON.parse(data);
     if (Array.isArray(obj.array)){
       cashe[obj.id] = obj.array;
+      clients[obj.cId].status = 0;
     }
     //merge
     if (cashe.length == clients.length){
